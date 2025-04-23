@@ -1,14 +1,16 @@
+import os
 from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity, JWTManager
 from flask_cors import CORS
+from dotenv import load_dotenv
 
 app = Flask(__name__)
 CORS(app)
-
+load_dotenv()
 # configurations
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///finance.db"
-app.config["SECRET_KEY"] = "your_secret_key"
+app.config["SECRET_KEY"] = os.getenv('SECRET_KEY')
 app.config["JWT_SECRET_KEY"] = "your_jwt_secret"
 
 db = SQLAlchemy(app)
@@ -29,28 +31,90 @@ class Transaction(db.Model):
     description = db.Column(db.String(255))
     date = db.Column(db.DateTime, default=db.func.current_timestamp())
 
+    user = db.relationship("User", backref=db.backref("transactions", lazy=True))
+
+class Categroy(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    category_name = db.Column(db.String(50), nullable=False)
+
+
 # routes
+@app.route('/')
+def login():
+    return 'login'
+
+#POST new user
 @app.route("/register", methods=["POST"])
 def register():
     data = request.get_json()
-    new_user = User(username=data["username"], email=data["email"], password=data["password"])
+    #hashed_pw = bcrypt.generate_password_hash(data['password']).decode('utf-8')
+    new_user = User(
+        username=data["username"], 
+        email=data["email"], 
+        password=data["password"]
+    )
     db.session.add(new_user)
     db.session.commit()
     return jsonify({"message": "User registered!"})
 
+#POST transactions
 @app.route("/transactions", methods=["POST"])
-@jwt_required()
+#@jwt_required()
 def add_transaction():
     data = request.get_json()
-    new_tx = Transaction(
+    if not data or not all(k in data for k in ["user_id", "type", "amount", "category"]):
+        return jsonify({"error": "Missing required fields"}), 400
+
+    if data["type"] not in ["income", "expense"]:
+        return jsonify({"error": "Invalid transaction type"}), 400
+    
+    new_transaction = Transaction(
         user_id=get_jwt_identity(),
         amount=data["amount"],
         category=data["category"],
         description=data["description"],
     )
-    db.session.add(new_tx)
+    db.session.add(new_transaction)
     db.session.commit()
     return jsonify({"message": "Transaction added!"})
+
+#GET all transactions
+@app.route('/transactions', methods=['GET'])
+def get_transactions():
+    transactions = Transaction.query.all()
+    transactions_list = [
+        {
+            "id": t.id,
+            "user_id": t.user_id,
+            "type": t.type,
+            "amount": t.amount,
+            "category": t.category,
+            "description": t.description,
+            "date": t.date.strftime("%Y-%m-%d %H:%M:%S")
+        }
+        for t in transactions
+    ]
+
+    return jsonify(transactions_list), 200
+
+#GET transactions by id
+@app.route('/transactions/<int:transaction_id>', methods=['GET'])
+def get_transaction(transaction_id):
+    transaction = Transaction.query.get(transaction_id)
+    
+    if not transaction:
+        return jsonify({"error": "Transaction not found"}), 404
+
+    return jsonify({
+        "id": transaction.id,
+        "user_id": transaction.user_id,
+        "type": transaction.type,
+        "amount": transaction.amount,
+        "category": transaction.category,
+        "description": transaction.description,
+        "date": transaction.date.strftime("%Y-%m-%d %H:%M:%S")
+    }), 200
+
 
 if __name__ == "__main__":
     app.run(debug=True)
