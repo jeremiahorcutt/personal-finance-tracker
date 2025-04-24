@@ -41,7 +41,18 @@ class Categroy(db.Model):
 # routes
 @app.route('/')
 def login():
-    return 'login'
+    data = request.get_json()
+
+    if not data or not all(k in data for k in ["email", "password"]):
+        return jsonify({"error": "Missing email or password"}), 400
+
+    user = User.query.filter_by(email=data['email']).first()
+
+    if not user or not check_password_hash(user.password, data['password']):
+        return jsonify({"error": "Invalid credentials"}), 401
+
+    access_token = create_access_token(identity=user.id)
+    return jsonify({"access_token": access_token, "user_id": user.id}), 200
 
 #POST new user
 @app.route("/register", methods=["POST"])
@@ -59,7 +70,7 @@ def register():
 
 #POST transactions
 @app.route("/transactions", methods=["POST"])
-#@jwt_required()
+@jwt_required()
 def add_transaction():
     data = request.get_json()
     if not data or not all(k in data for k in ["user_id", "type", "amount", "category"]):
