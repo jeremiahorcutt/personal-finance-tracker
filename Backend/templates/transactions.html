@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Transactions</title>
+</head>
+<body>
+  <h2>All Transactions</h2>
+  <a href="/transactions/add">➕ Add Transaction</a>
+  <table border="1">
+    <tr>
+      <th>ID</th>
+      <th>Amount</th>
+      <th>Category</th>
+      <th>Description</th>
+      <th>Date</th>
+      <th>Actions</th>
+    </tr>
+    {% for tx in transactions %}
+    <tr>
+      <td>{{ tx.id }}</td>
+      <td>{{ tx.amount }}</td>
+      <td>{{ tx.category }}</td>
+      <td>{{ tx.description }}</td>
+      <td>{{ tx.date.strftime("%Y-%m-%d") }}</td>
+      <td>
+        <a href="/transactions/{{ tx.id }}">View</a> |
+        <a href="/transactions/{{ tx.id }}/edit">Edit</a> |
+        <form action="/transactions/{{ tx.id }}/delete" method="POST" style="display:inline">
+          <button type="submit">Delete</button>
+        </form>
+      </td>
+    </tr>
+    {% endfor %}
+  </table>
+</body>
+</html>
+🧾 add_transaction.html (Add Form)
+html
+Copy
+Edit
+<!DOCTYPE html>
+<html>
+<head><title>Add Transaction</title></head>
+<body>
+  <h2>Add Transaction</h2>
+  <form method="POST">
+    <input name="amount" placeholder="Amount" required><br>
+    <input name="category" placeholder="Category" required><br>
+    <input name="description" placeholder="Description"><br>
+    <button type="submit">Add</button>
+  </form>
+</body>
+</html>

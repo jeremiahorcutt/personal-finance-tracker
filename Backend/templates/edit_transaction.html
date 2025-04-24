@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Edit Transaction</title>
+</head>
+<body>
+  <h2>Edit Transaction</h2>
+
+  <form method="POST">
+    <label for="amount">Amount:</label><br>
+    <input type="number" step="0.01" name="amount" value="{{ transaction.amount }}" required><br><br>
+
+    <label for="category">Category:</label><br>
+    <input type="text" name="category" value="{{ transaction.category }}" required><br><br>
+
+    <label for="description">Description:</label><br>
+    <input type="text" name="description" value="{{ transaction.description }}"><br><br>
+
+    <button type="submit">💾 Save Changes</button>
+  </form>
+
+  <a href="/transactions/{{ transaction.id }}">← Back to Transaction</a>
+</body>
+</html>

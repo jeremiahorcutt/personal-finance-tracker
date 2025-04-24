@@ -7,11 +7,14 @@
 <body>
     <header><a href="/">Personal Finance Tracker</a></header>
     <h2>Register</h2>
-    <form action="/register" method="POST">
-      <input name="username" placeholder="Username" required>
-      <input name="email" type="email" placeholder="Email" required>
-      <input name="password" type="password" placeholder="Password" required>
+    <form action="/register" method="POST" id="registerForm">
+      <input name="username" id="username" placeholder="Username" required>
+      <input name="email" id="email" type="email" placeholder="Email" required>
+      <input name="password" id="password" type="password" placeholder="Password" required>
       <button type="submit">Register</button>
     </form>
+    <p id="responseMessage"></p>
+
+    <script src="/statics/register.js"></script>
 </body>
 </html>
