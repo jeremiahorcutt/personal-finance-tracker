@@ -41,33 +41,42 @@ class Categroy(db.Model):
 
 # routes
 @app.route('/')
+def home():
+  return render_template('index.html')  
+
+@app.route('/login', methods=["GET","POST"])
 def login():
-    data = request.get_json()
+    if request.method == "POST":
+      data = request.get_json()
 
-    if not data or not all(k in data for k in ["email", "password"]):
-        return jsonify({"error": "Missing email or password"}), 400
+      if not data or not all(k in data for k in ["email", "password"]):
+          return jsonify({"error": "Missing email or password"}), 400
 
-    user = User.query.filter_by(email=data['email']).first()
+      user = User.query.filter_by(email=data['email']).first()
 
-    if not user or not check_password_hash(user.password, data['password']):
-        return jsonify({"error": "Invalid credentials"}), 401
+      if not user or not check_password_hash(user.password, data['password']):
+          return jsonify({"error": "Invalid credentials"}), 401
 
-    access_token = create_access_token(identity=user.id)
-    return jsonify({"access_token": access_token, "user_id": user.id}), 200
+      access_token = create_access_token(identity=user.id)
+      return jsonify({"access_token": access_token, "user_id": user.id}), 200
+    return render_template('login.html')
 
 #POST new user
-@app.route("/register", methods=["POST"])
+@app.route("/register", methods=["GET","POST"])
 def register():
-    data = request.get_json()
-    #hashed_pw = bcrypt.generate_password_hash(data['password']).decode('utf-8')
-    new_user = User(
-        username=data["username"], 
-        email=data["email"], 
-        password=data["password"]
-    )
-    db.session.add(new_user)
-    db.session.commit()
-    return jsonify({"message": "User registered!"})
+    if request.method == "POST":
+     
+      data = request.get_json()
+        #hashed_pw = bcrypt.generate_password_hash(data['password']).decode('utf-8')
+      new_user = User(
+          username=data["username"], 
+          email=data["email"], 
+          password=data["password"]
+     )
+      db.session.add(new_user)
+      db.session.commit()
+      return jsonify({"message": "User registered!"})
+    return render_template('register.html')
 
 #POST transactions
 @app.route("/transactions", methods=["POST"])
