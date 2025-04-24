@@ -1,11 +1,12 @@
 import os
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, render_template
 from flask_sqlalchemy import SQLAlchemy
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity, JWTManager
 from flask_cors import CORS
 from dotenv import load_dotenv
 
-app = Flask(__name__)
+
+app = Flask(__name__, template_folder="templates", static_folder="statics")
 CORS(app)
 load_dotenv()
 # configurations
