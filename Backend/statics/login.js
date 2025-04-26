@@ -23,9 +23,9 @@ document.getElementById('loginForm').addEventListener('submit', async function (
       messageEl.style.color = "green";
   
       // Save token in localStorage for future use
-      localStorage.setItem("access_token", result.access_token);
+      localStorage.setItem("access_token", response.access_token);
       localStorage.setItem("user_id", result.user_id);
-      window.location.href = "/transactions"
+      window.location.href = "/dashboard"
       
     } else {
       messageEl.textContent = (result.error || "Login failed.");

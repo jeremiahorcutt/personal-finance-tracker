@@ -1,0 +1,40 @@
+h1 {
+    background-color: #0f74f8;
+    color: white;
+    margin:0;
+    padding: 1rem;
+}
+h2{
+
+}
+body{
+    background-color: white;
+    margin:0;
+}
+
+a:link, a:visited {
+    text-decoration: none;
+}
+#homeLink {
+    color:white;
+}
+.oswald-header {
+    font-family: "Oswald", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 700;
+    font-style: normal;
+  }
+#loginForm{
+    justify-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    width: 600px;
+    height:300px;
+    margin-left:auto;
+    margin-right:auto;
+    border-radius:15px;
+    margin-top:35px;
+}
+#loginFormContent{
+    padding:25px;
+}

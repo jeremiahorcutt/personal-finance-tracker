@@ -5,6 +5,7 @@ from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identi
 from flask_cors import CORS
 from dotenv import load_dotenv
 from werkzeug.security import check_password_hash, generate_password_hash
+from datetime import timedelta
 
 
 app = Flask(__name__, template_folder="templates", static_folder="statics")
@@ -14,7 +15,7 @@ load_dotenv()
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///finance.db"
 app.config["SECRET_KEY"] = os.getenv('SECRET_KEY')
 app.config["JWT_SECRET_KEY"] = "your_jwt_secret"
-
+app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(minutes=15)
 db = SQLAlchemy(app)
 jwt = JWTManager(app)
 
@@ -44,6 +45,12 @@ class Categroy(db.Model):
 @app.route('/')
 def home():
   return render_template('index.html')  
+
+@app.route('/dashboard')
+def dashboard():
+    return render_template('dashboard.html')
+
+    return render_template('dashboard.html', transactions=transactions)
 
 @app.route('/login', methods=["GET","POST"])
 def login():
